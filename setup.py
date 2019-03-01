@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name            = 'pykrx',
@@ -9,7 +9,7 @@ setup(
     author_email    = 'jonghun.yoo@outlook.com',
     install_requires=['requests', 'pandas'],
     license         = 'MIT',
-    packages        = ['pykrx', 'pykrx.comm', 'pykrx.stock', 'pykrx.short', 'pykrx.bond'],
+    packages=find_packages(include=['pykrx', 'pykrx.*']),
     python_requires  = '>=3',
     zip_safe        = False
 )

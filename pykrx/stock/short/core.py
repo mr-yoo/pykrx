@@ -1,7 +1,20 @@
-from pykrx.comm.http import ShortHttp
+from pykrx.comm.http import KrxHttp
 from pandas import DataFrame
-import numpy as np
 import time
+
+
+class ShortHttp(KrxHttp):
+    @property
+    def otp_url(self):
+        return "http://short.krx.co.kr/contents/COM/GenerateOTP.jspx"
+
+    @property
+    def contents_url(self):
+        return "http://short.krx.co.kr/contents"
+
+    @property
+    def uri(self):
+        return "/SRT/99/SRT99000001.jspx"
 
 
 class SRT02010100(ShortHttp):

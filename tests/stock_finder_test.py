@@ -1,5 +1,5 @@
 import unittest
-from pykrx.comm.ticker import *
+from pykrx.stock.norm.ticker import *
 
 
 class StockFinderTest(unittest.TestCase):

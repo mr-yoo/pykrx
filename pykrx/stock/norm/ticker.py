@@ -1,46 +1,10 @@
-from pykrx.comm.http import MarketDataHttp
 from pykrx.comm.util import dataframe_empty_handler, singleton
+from pykrx.stock.norm.core import StockFinder, DelistingFinder
 import pandas as pd
-from pandas import DataFrame
-
-
-class StockFinder(MarketDataHttp):
-    @property
-    def bld(self):
-        return "COM/finder_stkisu"
-
-    @dataframe_empty_handler
-    def read(self, market="ALL", name=""):
-        """30040 일자별 시세 스크래핑에서 종목 검색기
-        http://marketdata.krx.co.kr/mdi#document=040204
-        :param market: 조회 시장 (STK/KSQ/ALL)
-        :param name  : 검색할 종목명 -  입력하지 않을 경우 전체
-        :return      : 종목 검색 결과 DataFrame
-
-        """
-        result = self.post(mktsel=market, searchText=name)
-        return DataFrame(result['block1'])
-
-
-class DelistingFinder(MarketDataHttp):
-    @property
-    def bld(self):
-        return "COM/finder_dellist_isu"
-
-    @dataframe_empty_handler
-    def read(self, market="ALL", name=""):
-        """30031 상장 폐지 종목에서 종목 검색기
-        http://marketdata.krx.co.kr/mdi#document=040603
-        :param market: 조회 시장 (STK/KSQ/ALL)
-        :param name  : 검색할 종목명 -  입력하지 않을 경우 전체
-        :return      : 종목 검색 결과 DataFrame
-        """
-        result = self.post(mktsel=market, searchText=name)
-        return DataFrame(result['result'])
 
 
 @singleton
-class KrxTicker:
+class StockTicker:
     def __init__(self):
         # 조회일 기준의 상장/상폐 종목 리스트
         df_listed = self._get_stock_info_listed()
@@ -111,5 +75,5 @@ class KrxTicker:
 
 if __name__ == "__main__":
     pd.set_option('display.width', None)
-    ticker = KrxTicker()
+    ticker = StockTicker()
     print(ticker.get_delist(fromdate="20040422", todate="20040423"))

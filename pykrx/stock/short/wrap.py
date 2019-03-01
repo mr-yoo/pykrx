@@ -1,12 +1,12 @@
-from pykrx.short.core import *
 from pykrx.comm.util import *
-from pykrx.comm.ticker import KrxTicker
+from pykrx.stock.norm.ticker import StockTicker
+from pykrx.stock.short.core import *
 from datetime import datetime
 
 
 class KrxShort:
     def __init__(self):
-        self.ticker = KrxTicker()
+        self.ticker = StockTicker()
 
     @dataframe_empty_handler
     def get_shorting_status_by_date(self, fromdate, todate, ticker):

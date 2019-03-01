@@ -1,8 +1,22 @@
-from pykrx.comm.http import MarketDataHttp
+from pykrx.comm.http import KrxHttp
 from pandas import DataFrame
 
 
-class MKD40038(MarketDataHttp):
+class BondDataHttp(KrxHttp):
+    @property
+    def otp_url(self):
+        return "http://marketdata.krx.co.kr/contents/COM/GenerateOTP.jspx"
+
+    @property
+    def contents_url(self):
+        return "http://marketdata.krx.co.kr/contents"
+
+    @property
+    def uri(self):
+        return "/MKD/99/MKD99000001.jspx"
+
+
+class MKD40038(BondDataHttp):
     # 지표 수익률 (20140303 ~ 현재)
     # - http://marketdata.krx.co.kr/mdi#document=05030403
     @property
@@ -29,7 +43,7 @@ class MKD40038(MarketDataHttp):
             return None
 
 
-class MKD40013(MarketDataHttp):
+class MKD40013(BondDataHttp):
     # 장외 일자별 채권수익률
     # - http://marketdata.krx.co.kr/mdi#document=05030401
     @property
