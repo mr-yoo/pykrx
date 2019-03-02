@@ -1,5 +1,4 @@
-
-from pykrx.stock import *
+from pykrx.stock.api import *
 
 
 
