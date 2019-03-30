@@ -2,21 +2,7 @@ from pykrx.comm.http import KrxHttp
 from pandas import DataFrame
 
 
-class BondDataHttp(KrxHttp):
-    @property
-    def otp_url(self):
-        return "http://marketdata.krx.co.kr/contents/COM/GenerateOTP.jspx"
-
-    @property
-    def contents_url(self):
-        return "http://marketdata.krx.co.kr/contents"
-
-    @property
-    def uri(self):
-        return "/MKD/99/MKD99000001.jspx"
-
-
-class MKD40038(BondDataHttp):
+class MKD40038(KrxHttp):
     # 지표 수익률 (20140303 ~ 현재)
     # - http://marketdata.krx.co.kr/mdi#document=05030403
     @property
@@ -43,7 +29,7 @@ class MKD40038(BondDataHttp):
             return None
 
 
-class MKD40013(BondDataHttp):
+class MKD40013(KrxHttp):
     # 장외 일자별 채권수익률
     # - http://marketdata.krx.co.kr/mdi#document=05030401
     @property
@@ -70,5 +56,5 @@ if __name__ == "__main__":
     import pandas as pd
     pd.set_option('display.width', None)
 
-    df = MKD40013().scraping("20190202")
+    df = MKD40013().read("20190211")
     print(df)

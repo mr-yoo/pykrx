@@ -73,7 +73,7 @@ class SRT02020300(ShortHttp):
         return "SRT/02/02020300/srt02020300"
 
     @staticmethod
-    def read(fromdate, todate, market, inquery):
+    def read(fromdate, todate, market=1, inquery=1):
         """02020300 공매도 거래 현황
            http://short.krx.co.kr/contents/SRT/02/02020300/SRT02020300.jsp
         :param fromdate: 조회 시작 일자 (YYMMDD)
@@ -96,7 +96,7 @@ class SRT02020400(ShortHttp):
         return "SRT/02/02020400/srt02020400"
 
     @staticmethod
-    def read(date, market):
+    def read(date, market=1):
         """02020400 공매도 거래 현황
            http://short.krx.co.kr/contents/SRT/02/02010100/SRT02010100.jsp
         :param date  : 조회 일자 (YYMMDD)
@@ -118,7 +118,7 @@ class SRT02030100(ShortHttp):
         return "SRT/02/02030100/srt02030100"
 
     @staticmethod
-    def read(fromdate, todate, market, isin=""):
+    def read(fromdate, todate, market=1, isin=""):
         """02030100 공매도 잔고 현황
            http://short.krx.co.kr/contents/SRT/02/02010100/SRT02010100.jsp
         :param fromdate: 조회 시작 일자 (YYMMDD)
@@ -157,7 +157,7 @@ class SRT02030400(ShortHttp):
         return "SRT/02/02030400/srt02030400"
 
     @staticmethod
-    def read(date, market="코스피"):
+    def read(date, market=1):
         """02030400 공매도 잔고 현황
            http://short.krx.co.kr/contents/SRT/02/02020300/SRT02020300.jsp
         :param date  : 조회 일자 (YYMMDD)
@@ -183,7 +183,7 @@ if __name__ == "__main__":
     # print(SRT02020300.read("20181207", "20181212", "코스피", "거래대금"))
     # print(SRT02020400.read("20181212", "코스피"))
 
-    # print(SRT02030100.read("20181212", "20181212", "코스피"))
+    print(SRT02030100.read("20181212", "20181212", 1, "KR7210980009"))
     # print(SRT02030100.read("20181207", "20181212", "코스피", "KR7210980009"))
 
-    print(SRT02030400.read("20181214", "코스피"))
+    # print(SRT02030400.read("20181214", 1))

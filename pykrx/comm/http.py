@@ -45,14 +45,12 @@ class KrxHttp(ABC):
             return None
 
     @property
-    @abstractmethod
     def otp_url(self):
-        raise NotImplementedError
+        return "http://marketdata.krx.co.kr/contents/COM/GenerateOTP.jspx"
 
     @property
-    @abstractmethod
     def contents_url(self):
-        raise NotImplementedError
+        return "http://marketdata.krx.co.kr/contents"
 
     @property
     @abstractmethod
@@ -60,9 +58,8 @@ class KrxHttp(ABC):
         raise NotImplementedError
 
     @property
-    @abstractmethod
     def uri(self):
-        raise NotImplementedError
+        return "/MKD/99/MKD99000001.jspx"
 
     @property
     def name(self):

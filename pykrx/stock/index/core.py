@@ -2,21 +2,7 @@ from pykrx.comm.http import KrxHttp
 from pandas import DataFrame
 
 
-class IndexDataHttp(KrxHttp):
-    @property
-    def otp_url(self):
-        return "http://marketdata.krx.co.kr/contents/COM/GenerateOTP.jspx"
-
-    @property
-    def contents_url(self):
-        return "http://marketdata.krx.co.kr/contents"
-
-    @property
-    def uri(self):
-        return "/MKD/99/MKD99000001.jspx"
-
-
-class MKD20011(IndexDataHttp):
+class MKD20011(KrxHttp):
     @property
     def bld(self):
         return "/MKD/03/0304/03040100/mkd03040100"
@@ -27,7 +13,7 @@ class MKD20011(IndexDataHttp):
         return DataFrame(result['output'])
 
 
-class MKD20011_KOSPI(IndexDataHttp):
+class MKD20011_KOSPI(KrxHttp):
     @property
     def bld(self):
         return "MKD/03/0304/03040101/mkd03040101T2_02"

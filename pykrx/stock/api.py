@@ -1,6 +1,8 @@
-import pykrx.stock.norm.wrap as norm
-import pykrx.stock.index.wrap as index
-from pykrx.stock.norm.ticker import *
+import pykrx.stock.market as market
+import pykrx.stock.index as index
+from pykrx.stock.market import *
+from pykrx.stock.index import *
+from pykrx.stock.short import *
 
 
 def _resample_ohlcv(df, freq):
@@ -22,15 +24,7 @@ def _resample_ohlcv(df, freq):
     return df
 
 
-def get_ticker(date=None):
-    return StockTicker().get(date)
-
-
-def get_delist(fromdate, todate):
-    return StockTicker().get_delist(fromdate=fromdate, todate=todate)
-
-
-def get_ohlcv_by_date(fromdate, todate, ticker, freq='d'):
+def get_market_ohlcv_by_date(fromdate, todate, ticker, freq='d'):
     """
     :param fromdate: 조회 시작 일자 (YYYYMMDD)
     :param todate  : 조회 종료 일자 (YYYYMMDD)
@@ -38,20 +32,12 @@ def get_ohlcv_by_date(fromdate, todate, ticker, freq='d'):
     :param freq    : d - 일 / m - 월 / y - 년
     :return:
     """
-    isin = StockTicker().get_isin(ticker)
-    df = norm.get_ohlcv_by_date(fromdate, todate, isin)
+    isin = market.get_stock_ticker_isin(ticker)
+    df = market.get_market_ohlcv_by_date(fromdate, todate, isin)
     return _resample_ohlcv(df, freq)
 
 
-def get_price_change_by_ticker(fromdate, todate):
-    return norm.get_price_change_by_ticker(fromdate, todate, "ALL")
-
-
-def get_fundamental_by_ticker(date):
-    return norm.get_fundamental_by_ticker(date, "ALL")
-
-
-def get_kospi_index_ohlcv_by_date(fromdate, todate, freq='d'):
+def get_index_kospi_ohlcv_by_date(fromdate, todate, ticker, freq='d'):
     """
     :param fromdate: 조회 시작 일자 (YYYYMMDD)
     :param todate  : 조회 종료 일자 (YYYYMMDD)
@@ -59,14 +45,15 @@ def get_kospi_index_ohlcv_by_date(fromdate, todate, freq='d'):
     :return:
     """
     # 001 : 코스피 지수
-    df = index.get_ohlcv_by_date(fromdate, todate, "001")
+    df = index.get_index_kospi_ohlcv_by_date(fromdate, todate, ticker)
     return _resample_ohlcv(df, freq)
 
 
 if __name__ == "__main__":
-    # df = get_ohlcv_by_date("20190225", "20190228", "000660")
-    # df = get_price_change_by_ticker("20190225", "20190228")
-    # df = get_fundamental_by_ticker("20190225")
-    df = get_kospi_index_ohlcv_by_date("20180225", "20190228")
+    # df = get_market_ohlcv_by_date("20190225", "20190228", "000660")
+    # df = get_market_price_change_by_ticker("20190225", "20190228")
+    # df = get_market_fundamental_by_ticker("20190225")
+    # df = get_index_kospi_ohlcv_by_date("20180225", "20190228", "코스피 200")
+    df = get_index_kospi_by_group("20190228")
     print(df.head())
 

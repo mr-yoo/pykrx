@@ -1,38 +1,36 @@
-from ..norm.core import *
-from pykrx.stock.norm.ticker import StockTicker
+from pykrx.stock.market.core import *
+from pykrx.stock.market.ticker import *
 from pykrx.comm import dataframe_empty_handler
-import pandas as pd
 import numpy as np
 
 
-
 @dataframe_empty_handler
-def get_ohlcv_by_date(fromdate, todate, isin):
+def get_market_ohlcv_by_date(fromdate, todate, isin):
     """일자별 OHLCV
     :param fromdate: 조회 시작 일자   (YYYYMMDD)
     :param todate  : 조회 마지막 일자 (YYYYMMDD)
     :param isin    : 조회 종목의 ISIN
     :return        : OHLCV DataFrame
                      시가     고가    저가    종가   거래량
-        20180208     97200   99700   97100   99300   813467
-        20180207     98000  100500   96000   96500  1082264
-        20180206     94900   96700   93400   96100  1094871
-        20180205     99400   99600   97200   97700   745562
+        2018-02-08     97200   99700   97100   99300   813467
+        2018-02-07     98000  100500   96000   96500  1082264
+        2018-02-06     94900   96700   93400   96100  1094871
+        2018-02-05     99400   99600   97200   97700   745562
     """
     df = MKD30040().read(fromdate, todate, isin)
 
     df = df[['trd_dd', 'tdd_opnprc', 'tdd_hgprc', 'tdd_lwprc',
              'tdd_clsprc', 'acc_trdvol']]
     df.columns = ['날짜', '시가', '고가', '저가', '종가', '거래량']
-    df['날짜'] = pd.to_datetime(df['날짜'])
-    df = df.set_index('날짜')
+    df = df.replace('/', '', regex=True)
     df = df.replace(',', '', regex=True)
+    df = df.set_index('날짜')
     df = df.astype(np.int32)
     return df.sort_index()
 
 
 @dataframe_empty_handler
-def get_price_change_by_ticker(fromdate, todate, market):
+def get_market_price_change_by_ticker(fromdate, todate, market="ALL"):
     """
     :param fromdate: 조회 시작 일자 (YYYYMMDD)
     :param todate  : 조회 종료 일자 (YYYYMMDD)
@@ -50,11 +48,11 @@ def get_price_change_by_ticker(fromdate, todate, market):
 
     # MKD80037는 상장 폐지 종목은 제외한 정보를 전달하기 때문에,
     # 조회 일자에 상장 폐지 종목이 포함돼 있다면, 강제로 추가한다
-    delist = StockTicker().get_delist(fromdate=fromdate, todate=todate)
+    delist = get_stock_ticker_delist(fromdate=fromdate, todate=todate)
     if len(delist) > 0:
         # 입력된 조회 일자가 주말일 경우, 가까운 평일로 변경
-        df_for_business_day = get_ohlcv_by_date(fromdate, todate,
-                                                       "KR7000020008")
+        df_for_business_day = get_market_ohlcv_by_date(fromdate, todate,
+                                                "KR7000020008")
         fromdate = df_for_business_day.index[0]
         # 평일 하루의 OHLCV를 얻어와 시가를 가져온다
         tmp = MKD80037().read(market, fromdate, fromdate)
@@ -81,7 +79,7 @@ def get_price_change_by_ticker(fromdate, todate, market):
 
 
 @dataframe_empty_handler
-def get_fundamental_by_ticker(date, market):
+def get_market_fundamental_by_ticker(date, market="ALL"):
     """일자별 BPS/PER/PBR/배당수익률
     :param date    : 조회 일자 (YYYYMMDD)
                       20000101 이후의 데이터 제공

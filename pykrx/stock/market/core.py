@@ -2,53 +2,7 @@ from pykrx.comm.http import KrxHttp
 from pandas import DataFrame
 
 
-class NormDataHttp(KrxHttp):
-    @property
-    def otp_url(self):
-        return "http://marketdata.krx.co.kr/contents/COM/GenerateOTP.jspx"
-
-    @property
-    def contents_url(self):
-        return "http://marketdata.krx.co.kr/contents"
-
-    @property
-    def uri(self):
-        return "/MKD/99/MKD99000001.jspx"
-
-
-class StockFinder(NormDataHttp):
-    @property
-    def bld(self):
-        return "COM/finder_stkisu"
-
-    def read(self, market="ALL", name=""):
-        """30040 일자별 시세 스크래핑에서 종목 검색기
-        http://marketdata.krx.co.kr/mdi#document=040204
-        :param market: 조회 시장 (STK/KSQ/ALL)
-        :param name  : 검색할 종목명 -  입력하지 않을 경우 전체
-        :return      : 종목 검색 결과 DataFrame
-        """
-        result = self.post(mktsel=market, searchText=name)
-        return DataFrame(result['block1'])
-
-
-class DelistingFinder(NormDataHttp):
-    @property
-    def bld(self):
-        return "COM/finder_dellist_isu"
-
-    def read(self, market="ALL", name=""):
-        """30031 상장 폐지 종목에서 종목 검색기
-        http://marketdata.krx.co.kr/mdi#document=040603
-        :param market: 조회 시장 (STK/KSQ/ALL)
-        :param name  : 검색할 종목명 -  입력하지 않을 경우 전체
-        :return      : 종목 검색 결과 DataFrame
-        """
-        result = self.post(mktsel=market, searchText=name)
-        return DataFrame(result['result'])
-
-
-class MKD30030(NormDataHttp):
+class MKD30030(KrxHttp):
     @property
     def bld(self):
         return "MKD/04/0406/04060200/mkd04060200"
@@ -69,7 +23,7 @@ class MKD30030(NormDataHttp):
         return DataFrame(result['상장종목검색'])
 
 
-class MKD30040(NormDataHttp):
+class MKD30040(KrxHttp):
     @property
     def bld(self):
         return "MKD/04/0402/04020100/mkd04020100t3_02"
@@ -92,7 +46,7 @@ class MKD30040(NormDataHttp):
         return DataFrame(result['block1'])
 
 
-class MKD30009(NormDataHttp):
+class MKD30009(KrxHttp):
     @property
     def bld(self):
         return "MKD/13/1302/13020401/mkd13020401"
@@ -113,7 +67,7 @@ class MKD30009(NormDataHttp):
         return DataFrame(result['result'])
 
 
-class MKD01023(NormDataHttp):
+class MKD01023(KrxHttp):
     @property
     def bld(self):
         return "MKD/01/0110/01100305/mkd01100305_01"
@@ -123,7 +77,7 @@ class MKD01023(NormDataHttp):
         return DataFrame(result['block1'])
 
 
-class MKD80037(NormDataHttp):
+class MKD80037(KrxHttp):
     @property
     def bld(self):
         return "MKD/13/1302/13020102/mkd13020102"
@@ -151,6 +105,5 @@ class MKD80037(NormDataHttp):
 if __name__ == "__main__":
     import pandas as pd
     pd.set_option('display.width', None)
-    # print(MKD20011().read("20180501"))
-    print(MKD20011_KOSPI().read("20190122", "20190222", "028"))
+    print(MKD80037().read("ALL", "20180501", "20180801"))
     # print(MKD80037().read("ALL", "20180501", "20180515"))
