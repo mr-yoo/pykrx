@@ -46,7 +46,7 @@ class MKD30040(KrxHttp):
         return DataFrame(result['block1'])
 
 
-class MKD30009(KrxHttp):
+class MKD30009_0(KrxHttp):
     @property
     def bld(self):
         return "MKD/13/1302/13020401/mkd13020401"
@@ -64,6 +64,33 @@ class MKD30009(KrxHttp):
             4   8,266    1.07   2,815      -  001810    무림SP      0.34   24.06     117  5      30         2018/01/03
         """
         result = self.post(market_gubun=market, gubun=1, schdate=date)
+        return DataFrame(result['result'])
+
+
+
+class MKD30009_1(KrxHttp):
+    @property
+    def bld(self):
+        return "MKD/13/1302/13020401/mkd13020401"
+
+    def read(self, fromdate, todate, market, isin):
+        """30009 PER/PBR/배당수익률 (개별종목)
+        :param market: 조회 시장 (STK/KSQ/ALL)
+        :param fromdate: 조회 시작 일자 (YYMMDD)
+        :param todate: 조회 종료 일자 (YYMMDD)
+        :param isin: 조회할 종목의 ISIN 번호
+        :return:
+                  bps dvd_yld  end_pr iisu_code isu_cd     isu_nm                 isu_nm2   pbr   per prv_eps rn stk_dvd totCnt     work_dt
+            0  28,126     1.9  44,650         -  005930   삼성전자   <em class ="up"></em>  1.59  7.45   5,997  1     850      6  2019/03/29
+            1  28,126     1.9  44,850         -  005930   삼성전자   <em class ="up"></em>  1.59  7.48   5,997  2     850         2019/03/28
+            2  28,126    1.87  45,350         -  005930   삼성전자   <em class ="up"></em>  1.61  7.56   5,997  3     850         2019/03/27
+            3  28,126    1.88  45,250         -  005930   삼성전자   <em class ="up"></em>  1.61  7.55   5,997  4     850         2019/03/26
+            4  28,126    1.87  45,500         -  005930   삼성전자   <em class ="up"></em>  1.62  7.59   5,997  5     850         2019/03/25
+            5  28,126    1.83  46,550         -  005930   삼성전자   <em class ="up"></em>  1.66  7.76   5,997  6     850         2019/03/22
+        """
+        result = self.post(market_gubun=market, fromdate=fromdate,
+                           todate=todate, gubun=2, isu_cd=isin,
+                           isu_srt_cd="A" + isin[3:9])
         return DataFrame(result['result'])
 
 
@@ -105,5 +132,6 @@ class MKD80037(KrxHttp):
 if __name__ == "__main__":
     import pandas as pd
     pd.set_option('display.width', None)
-    print(MKD80037().read("ALL", "20180501", "20180801"))
+    # print(MKD80037().read("ALL", "20180501", "20180801"))
     # print(MKD80037().read("ALL", "20180501", "20180515"))
+    print(MKD30009_1().read('20190322', '20190329', 'ALL', 'KR7005930003'))

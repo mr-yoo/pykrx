@@ -43,11 +43,11 @@ def get_shorting_status_by_date(fromdate, todate, ticker):
 
 
 @dataframe_empty_handler
-def get_shorting_volume_by_ticker(fromdate, todate, ticker, market="코스피"):
+def get_shorting_volume_by_ticker(fromdate, todate, ticker=None, market="코스피"):
     """종목별 공매도 거래 현황 조회
     :param fromdate: 조회 시작 일자   (YYYYMMDD)
     :param todate  : 조회 마지막 일자 (YYYYMMDD)
-    :param ticker  : 종목 번호 - None일 경우 전체 조회
+    :param ticker  : 조회 종목
     :param market  : 코스피/코스닥/코넥스
     :return        : 거래 현황 DataFrame
                           종목명   공매도수량  총거래량  거래량비중
@@ -57,7 +57,9 @@ def get_shorting_volume_by_ticker(fromdate, todate, ticker, market="코스피"):
         2018/01/19           BGF     4193       299516         1.40
         2018/01/19     BGF리테일     1594        10446        15.26
     """
-    isin = get_stock_ticker_isin(ticker)
+    isin = ""
+    if ticker is not None:
+        isin = get_stock_ticker_isin(ticker)
     market = {"코스피": 1, "코스닥": 3, "코넥스": 4}.get(market, 1)
     df = SRT02020100().read(fromdate, todate, market, isin)
 

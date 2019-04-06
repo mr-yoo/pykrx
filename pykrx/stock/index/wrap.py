@@ -59,6 +59,8 @@ def get_index_kospi_ohlcv_by_date(fromdate, todate, ticker):
     df['날짜'] = pd.to_datetime(df['날짜'])
     df = df.set_index('날짜')
     df = df.replace(',', '', regex=True)
+    df = df.replace('', '0', regex=True)
+
     df = df.astype({'시가': np.float32, '고가': np.float32,
                     '저가': np.float32, '종가': np.float32,
                     '거래량': np.int64})
@@ -95,9 +97,11 @@ def get_index_kospi_by_group(date):
 
 if __name__ == "__main__":
     import time
-    ticker_list = get_index_kospi_ticker_list()
-    for ticker in ticker_list:
-        df = get_index_kospi_ohlcv_by_date("20190325", "20190328", ticker)
-        print(df.head())
-        print("-"*10)
-        time.sleep(1)
+    # ticker_list = get_index_kospi_ticker_list()
+    # for ticker in ticker_list:
+    #     df = get_index_kospi_ohlcv_by_date("20190325", "20190328", ticker)
+    #     print(df.head())
+    #     print("-"*10)
+    #     time.sleep(1)
+    df = get_index_kospi_ohlcv_by_date("19900101", "19900301", "코스피")
+    print(df)
