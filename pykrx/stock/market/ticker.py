@@ -100,9 +100,9 @@ def get_stock_ticker_isin(ticker):
 
 
 @dataframe_empty_handler
-def get_stock_ticker_isin_debug():
+def get_stock_market_from(ticker):
     stock = _StockTicker()
-    return stock.df
+    return stock.df['시장'][ticker]
 
 
 @dataframe_empty_handler
@@ -131,6 +131,8 @@ if __name__ == "__main__":
     # print(get_stock_ticker_delist(fromdate="20040422", todate="20040423"))
     # print(get_stock_ticker_list())
     # print(get_stock_ticker_isin("000660"))
-    tickers = get_stock_ticker_list("20150720")
-    print(len(tickers))
+    market = get_stock_market_from("000660")
+    print(market)
+#    tickers = get_stock_ticker_list("20150720")
+#    print(len(tickers))
     # print(get_stock_ticker_isin("035420"))

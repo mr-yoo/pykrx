@@ -1,6 +1,7 @@
 from pykrx.comm.util import dataframe_empty_handler
-from pykrx.e3.etf.core import *
+from pykrx.e3.etf.core import (MKD60004, MKD60007, MKD60015)
 import numpy as np
+
 
 def _get_etf_ticker_dict():
     """KOSPI index ticker
@@ -29,12 +30,12 @@ def get_etf_ohlcv_by_date(fromdate, todate, ticker):
     :param isin    : 조회 종목의 티커
     :return        : OHLCV DataFrame
                      시가     고가    저가    종가   거래량
-        2018-02-08     97200   99700   97100   99300   813467
-        2018-02-07     98000  100500   96000   96500  1082264
-        2018-02-06     94900   96700   93400   96100  1094871
-        2018-02-05     99400   99600   97200   97700   745562
+        20180208     97200   99700   97100   99300   813467
+        20180207     98000  100500   96000   96500  1082264
+        20180206     94900   96700   93400   96100  1094871
+        20180205     99400   99600   97200   97700   745562
     """
-    isin = _get_etf_ticker_to_isin(ticker)
+    isin = _get_etf_ticker_to_isin(ticker)    
     df = MKD60007().read(fromdate, todate, isin)
 
     df = df[['work_dt', 'last_nav', 'isu_opn_pr', 'isu_hg_pr', 'isu_lw_pr',
@@ -52,7 +53,7 @@ def get_etf_ohlcv_by_date(fromdate, todate, ticker):
 
 
 @dataframe_empty_handler
-def get_etf_portfolio_deposit_file(date, isin):
+def get_etf_portfolio_deposit_file(date, ticker):
     """종목의 PDF 조회
     :param date: 조회 일자 (YYMMDD)
     :param isin: 조회 종목의 ISIN
@@ -67,6 +68,7 @@ def get_etf_portfolio_deposit_file(date, isin):
         현대차        252   30114000   2.12
 
     """
+    isin = _get_etf_ticker_to_isin(ticker)  
     df = MKD60015().read(date, isin)
     df = df[['isu_kor_nm', 'cu1_shrs', 'compst_amt', 'compst_amt_rt']]
     df.columns = ['종목', '계약수', '금액', '비중']
@@ -81,7 +83,7 @@ def get_etf_portfolio_deposit_file(date, isin):
 if __name__ == "__main__":
     import pandas as pd
     pd.set_option('display.width', None)
-    tickers = get_etf_ticker_list()
-    df = get_etf_ohlcv_by_date("20190228", "20190329", tickers[0])
-    # df = get_etf_portfolio_deposit_file("20190329", "KR7152100004")
+#    tickers = get_etf_ticker_list()
+#    df = get_etf_ohlcv_by_date("20190228", "20190329", tickers[0])
+    df = get_etf_portfolio_deposit_file("20190329", "ARIRANG 200동일가중")
     print(df)

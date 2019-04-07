@@ -1,7 +1,6 @@
 from pykrx.comm import dataframe_empty_handler
-from pykrx.stock.index.core import *
+from pykrx.stock.index.core import (MKD20011, MKD20011_KOSPI)
 from datetime import datetime
-import pandas as pd
 import numpy as np
 
 
@@ -55,12 +54,11 @@ def get_index_kospi_ohlcv_by_date(fromdate, todate, ticker):
     df = MKD20011_KOSPI().read(fromdate, todate, index)
     df = df[['trd_dd', 'opnprc_idx', 'hgprc_idx', 'lwprc_idx',
              'clsprc_idx', 'acc_trdvol']]
-    df.columns = ['날짜', '시가', '고가', '저가', '종가', '거래량']
-    df['날짜'] = pd.to_datetime(df['날짜'])
-    df = df.set_index('날짜')
+    df.columns = ['날짜', '시가', '고가', '저가', '종가', '거래량']        
     df = df.replace(',', '', regex=True)
     df = df.replace('', '0', regex=True)
-
+    df = df.replace('/', '', regex=True)
+    df = df.set_index('날짜')
     df = df.astype({'시가': np.float32, '고가': np.float32,
                     '저가': np.float32, '종가': np.float32,
                     '거래량': np.int64})
@@ -88,20 +86,12 @@ def get_index_kospi_by_group(date):
     df.columns = ['지수명', '기준시점', '발표시점', '기준지수', '현재지수',
                   '시가총액']
     df = df.set_index('지수명')
-
     df = df.replace(',', '', regex=True)
     df = df.replace('', 0)
     df = df.astype({"기준지수": float, "현재지수": float, "시가총액": int}, )
     return df
 
 
-if __name__ == "__main__":
-    import time
-    # ticker_list = get_index_kospi_ticker_list()
-    # for ticker in ticker_list:
-    #     df = get_index_kospi_ohlcv_by_date("20190325", "20190328", ticker)
-    #     print(df.head())
-    #     print("-"*10)
-    #     time.sleep(1)
+if __name__ == "__main__":    
     df = get_index_kospi_ohlcv_by_date("19900101", "19900301", "코스피")
     print(df)

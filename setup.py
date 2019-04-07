@@ -6,8 +6,8 @@ setup(
     description     = 'KRX scraping',
     url             = 'https://github.com/sharebook-kr/pykrx',
     author          = 'Brayden Jo, Lukas Yoo',
-    author_email    = 'hyunho.jo@outlook.com, jonghun.yoo@outlook.com, pystock@outlook.com'
-    install_requires= ['requests', 'pandas'],
+    author_email    = 'hyunho.jo@outlook.com, jonghun.yoo@outlook.com, pystock@outlook.com',
+    install_requires= ['requests', 'pandas', 'calendar', 'datetime',],
     license         = 'MIT',
     packages        = find_packages(include=['pykrx', 'pykrx.*']),
     python_requires = '>=3',

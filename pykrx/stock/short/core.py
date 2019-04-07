@@ -54,9 +54,10 @@ class SRT02020100(ShortHttp):
         page = 1
         while True:
             result = SRT02020100().post(mkt_tp_cd=market, isu_cd=isin, strt_dd=fromdate, end_dd=todate, curPage=page)
-            df = df.append(DataFrame(result['block1']))
-
-            # exit condition
+            if len(result['block1']) == 0 :
+                return df
+            df = df.append(DataFrame(result['block1']))            
+            # exit condition            
             load_data_idx = int(result['block1'][-1]['rn'])
             total_data_cnt = int(result['block1'][0]['totCnt'])
             if load_data_idx == total_data_cnt:
@@ -85,7 +86,7 @@ class SRT02020300(ShortHttp):
         0       1,161,522         37,396      6,821,963              0      8,020,881  2018/01/19
         1         970,406         41,242      8,018,997         13,141      9,043,786  2018/01/18
         2       1,190,006         28,327      8,274,090          6,465      9,498,888  2018/01/17
-        """
+        """        
         result = SRT02020300().post(mkt_tp_cd=market, inqCondTpCd=inquery, strt_dd=fromdate, end_dd=todate)
         return DataFrame(result['block1'])
 
@@ -178,12 +179,12 @@ if __name__ == "__main__":
     pd.set_option('display.width', None)
 
     # print(SRT02010100.read("KR7005930003", "20181205", "20181207"))
-    # print(SRT02020100.read("20181207", "20181212"))
+    print(SRT02020100.read("20190402", "20190402", market=1))
     # print(SRT02020100.read("20181207", "20181212", "코스피", "KR7005930003"))
     # print(SRT02020300.read("20181207", "20181212", "코스피", "거래대금"))
     # print(SRT02020400.read("20181212", "코스피"))
 
-    print(SRT02030100.read("20181212", "20181212", 1, "KR7210980009"))
+    # print(SRT02030100.read("20181212", "20181212", 1, "KR7210980009"))
     # print(SRT02030100.read("20181207", "20181212", "코스피", "KR7210980009"))
 
     # print(SRT02030400.read("20181214", 1))
