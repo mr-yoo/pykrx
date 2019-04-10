@@ -1,5 +1,5 @@
 from pykrx.comm import dataframe_empty_handler
-from pykrx.stock.index.core import (MKD20011, MKD20011_KOSPI)
+from pykrx.stock.index.core import (MKD20011, MKD20011_KOSPI, MKD20011_PDF)
 from datetime import datetime
 import numpy as np
 
@@ -92,6 +92,17 @@ def get_index_kospi_by_group(date):
     return df
 
 
+@dataframe_empty_handler
+def get_index_portfolio_deposit_file(date, ticker):
+    index = _get_kospi_ticker_to_id(ticker)    
+    df = MKD20011_PDF().read(date, index)
+    return df['isu_cd'].to_list()
+
+
 if __name__ == "__main__":    
-    df = get_index_kospi_ohlcv_by_date("19900101", "19900301", "코스피")
+    import pandas as pd
+    pd.set_option('display.expand_frame_repr', False)
+    # df = get_index_kospi_ohlcv_by_date("19900101", "19900301", "코스피")
+    df = get_index_portfolio_deposit_file("20190410", "코스피 소형주")
+    df = get_index_portfolio_deposit_file("20190410", "코스피 200")
     print(df)

@@ -12,6 +12,13 @@ def get_stock_ticker_list(date=None):
     return mrkt.get_stock_ticker_list(date)
 
 
+def get_business_days(year, mon):
+    strt = "{}{:02d}01".format(year, mon)
+    last = "{}{:02d}31".format(year, mon)
+    df = get_market_ohlcv_by_date(strt, last, "000020")
+    return df.index.to_list()
+
+
 def get_market_ohlcv_by_date(fromdate, todate, ticker, freq='d'):
     """
     :param fromdate: 조회 시작 일자 (YYYYMMDD)
@@ -70,10 +77,14 @@ def get_index_kospi_ticker_list():
     return indx.get_index_kospi_ticker_list()
 
     
+def get_index_portfolio_deposit_file(date, ticker):
+    return indx.get_index_portfolio_deposit_file(date, ticker)
+
 def get_index_kospi_ohlcv_by_date(fromdate, todate, ticker, freq='d'):
     """
     :param fromdate: 조회 시작 일자 (YYYYMMDD)
     :param todate  : 조회 종료 일자 (YYYYMMDD)
+    :param index   : 인덱스 티
     :param freq    : d - 일 / m - 월 / y - 년
     :return:
     """
@@ -132,7 +143,7 @@ def get_shorting_balance_top50(date, market):
 
 if __name__ == "__main__":    
     pd.set_option('display.expand_frame_repr', False)
-    df = get_market_ohlcv_by_date("20190225", "20190228", "000660")
+    # df = get_market_ohlcv_by_date("20190225", "20190228", "000660")
     # df = get_market_ohlcv_by_date("20150720", "20150810", "000020", "m")
     # df = get_market_price_change_by_ticker("20180301", "20180320")
     # df = get_market_fundamental_by_ticker("20180305")
@@ -140,7 +151,7 @@ if __name__ == "__main__":
     # df = get_market_fundamental_by_date("20180301", "20180320", "005930", "m")
     # tickers = get_index_kospi_ticker_list()
     # df = get_index_kospi_ohlcv_by_date("20190101", "20190228", "코스피 200")
-    # df = get_index_kospi_ohlcv_by_date("20190101", "20190228", "코스피 200", "m")
+    df = get_index_kospi_ohlcv_by_date("20000101", "20180630", "코스피 200", "m")
     # df = get_index_kospi_by_group("20190228")
     
     # df = get_shorting_investor_volume_by_date("20190401", "20190405", "KOSPI")

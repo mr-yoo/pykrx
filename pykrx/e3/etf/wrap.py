@@ -1,25 +1,59 @@
-from pykrx.comm.util import dataframe_empty_handler
-from pykrx.e3.etf.core import (MKD60004, MKD60007, MKD60015)
+from pykrx.comm.util import dataframe_empty_handler, singleton
+from pykrx.e3.etf.core import (MKD60003, MKD60007, MKD60015)
 import numpy as np
+import datetime
 
 
-def _get_etf_ticker_dict():
-    """KOSPI index ticker
-    """
-    try:
-        return _get_etf_ticker_dict.ticker
-    except AttributeError:
-        df = MKD60004().read()
-        _get_etf_ticker_dict.ticker = df.set_index('label')['value'].to_dict()
-        return _get_etf_ticker_dict.ticker
+@singleton
+class _EtfTicker:
+    def __init__(self):
+        closest_business_day = _get_closest_business_day()
+        self.df = self._get(closest_business_day)
+        self.dd = {}       
+        self.dd[closest_business_day] = self.df
+        
+    @dataframe_empty_handler    
+    def _get(self, date):
+        df = MKD60003().read(date)
+        df = df.set_index('isu_cd')['isu_abbrv']
+        return df
+        
+    @dataframe_empty_handler
+    def get_ticker(self, date):
+        df = self.dd.get(date, None)
+        if df is None:            
+            df = self._get(date)
+            self.dd[date] = df            
+            self.df.update(df)            
+            self.df.drop_duplicates()
+        return df.to_list()
+    
+    def get_isin(self, ticker):        
+        df = self.df.index[self.df == ticker]
+        if len(df) != 0:
+            return df[0]
+        return None
 
 
-def _get_etf_ticker_to_isin(ticker):
-    return _get_etf_ticker_dict()[ticker]
+def _get_etf_ticker_to_isin(ticker):    
+    return _EtfTicker().get_isin(ticker)
 
 
-def get_etf_ticker_list():
-    return list(_get_etf_ticker_dict().keys())
+def get_etf_ticker_list(date=None):
+    if date is None:
+        now = datetime.datetime.now()
+        if now.hour < 16:
+            now = now - datetime.timedelta(days=1)
+        date = now.strftime("%Y%m%d")
+    return _EtfTicker().get_ticker(date)
+
+
+def _get_closest_business_day():
+    now  = datetime.datetime.now()
+    past = now - datetime.timedelta(days=14)
+    df = MKD60007().read(past.strftime("%Y%m%d"), now.strftime("%Y%m%d"), 
+                  "KR7069500007")      
+    return df['work_dt'].iloc[0].replace("/", "")
 
 
 @dataframe_empty_handler
@@ -83,7 +117,7 @@ def get_etf_portfolio_deposit_file(date, ticker):
 if __name__ == "__main__":
     import pandas as pd
     pd.set_option('display.width', None)
-#    tickers = get_etf_ticker_list()
-#    df = get_etf_ohlcv_by_date("20190228", "20190329", tickers[0])
-    df = get_etf_portfolio_deposit_file("20190329", "ARIRANG 200동일가중")
+    df = get_etf_ticker_list()        
+    # df = get_etf_ohlcv_by_date("20120401", "20190329", "KOSEF 저PBR가중")
+    # df = get_etf_portfolio_deposit_file("20190329", "ARIRANG 200동일가중")
     print(df)

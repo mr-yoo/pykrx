@@ -21,13 +21,13 @@ class MKD20011_KOSPI(KrxHttp):
     def read(self, fromdate, todate, index):
         """코스피 주가 지수
         :param index    : 종합지수 - 코스피          (001)
-                           종합지수 - 코스피 벤치마크 (100)
-                           대표지수 - 코스피 200      (028)
-                           대표지수 - 코스피 100      (034)
-                           대표지수 - 코스피 50       (035)
-                           규모별   - 코스피 대형주   (002)
-                           규모별   - 코스피 중형주   (003)
-                           규모별   - 코스피 소형주   (004)
+                          종합지수 - 코스피 벤치마크 (100)
+                          대표지수 - 코스피 200      (028)
+                          대표지수 - 코스피 100      (034)
+                          대표지수 - 코스피 50       (035)
+                          규모별   - 코스피 대형주   (002)
+                          규모별   - 코스피 중형주   (003)
+                          규모별   - 코스피 소형주   (004)
         :param fromdate : 조회 시작 일자 (YYMMDD)
         :param todate   : 조회 마지막 일자 (YYMMDD)
         :return         : 코스피 주가지수 DataFrame
@@ -42,3 +42,26 @@ class MKD20011_KOSPI(KrxHttp):
                            bz_dd=todate, chartType="line", chartStandard="srate",
                            fromdate=fromdate, todate=todate)
         return DataFrame(result['output'])
+
+
+class MKD20011_PDF(KrxHttp):
+    @property
+    def bld(self):
+        return "MKD/03/0304/03040101/mkd03040101T3_07"
+
+    def read(self, date, index):
+        """주가지수 구성 항목
+                  acc_trdval cmpprevdd_prc fluc_tp_cd  isu_cd      isu_nm           mktcap tdd_clsprc updn_rate
+            0  1,623,651,330           140          1  095570  AJ네트웍스  294,044,012,600      6,280      2.28
+            1  1,197,049,750           100          2  068400    AJ렌터카  260,219,025,000     11,750      0.84
+            2    239,250,000         1,500          1  001460         BYC  158,339,902,500    253,500      0.60
+        """
+        result = self.post(ind_tp_cd=1, idx_ind_cd=index, lang="ko", schdate=date)
+        return DataFrame(result['output'])
+    
+    
+if __name__ == "__main__":
+    import pandas as pd
+    pd.set_option('display.expand_frame_repr', False)
+    df = MKD20011_PDF().read("20190410", "004")
+    print(df.head())
