@@ -1,8 +1,9 @@
-import pykrx.stock.market as mrkt
-import pykrx.stock.index as indx
-import pykrx.stock.short as shrt
+from pykrx.stock import market as mrkt
+from pykrx.stock import index as indx
+from pykrx.stock import short as shrt
 from pykrx.comm.util import resample_ohlcv
 import pandas as pd
+
 
 # -----------------------------------------------------------------------------
 # 주식 API
@@ -16,7 +17,7 @@ def get_business_days(year, mon):
     strt = "{}{:02d}01".format(year, mon)
     last = "{}{:02d}31".format(year, mon)
     df = get_market_ohlcv_by_date(strt, last, "000020")
-    return df.index.to_list()
+    return df.index.tolist()
 
 
 def get_market_ohlcv_by_date(fromdate, todate, ticker, freq='d'):
@@ -73,30 +74,41 @@ def get_market_fundamental_by_ticker(date, market):
 # 지수(INDEX) API
 # -----------------------------------------------------------------------------
 
-def get_index_kospi_ticker_list():
-    return indx.get_index_kospi_ticker_list()
+def get_index_ticker_list(date, market="KOSPI"):
+    return indx.IndexTicker().get_ticker(date, market)
 
     
-def get_index_portfolio_deposit_file(date, ticker):
-    return indx.get_index_portfolio_deposit_file(date, ticker)
+def get_index_portfolio_deposit_file(date, ticker, market="KOSPI"):
+    id = indx.IndexTicker().get_id(date, market, ticker)
+    return indx.get_index_portfolio_deposit_file(date, id, market)
 
-def get_index_kospi_ohlcv_by_date(fromdate, todate, ticker, freq='d'):
+
+def _get_index_ohlcv_by_date(fromdate, todate, ticker, market, freq):
     """
-    :param fromdate: 조회 시작 일자 (YYYYMMDD)
-    :param todate  : 조회 종료 일자 (YYYYMMDD)
-    :param index   : 인덱스 티
-    :param freq    : d - 일 / m - 월 / y - 년
-    :return:
-    """
-    # 001 : 코스피 지수
-    df = indx.get_index_kospi_ohlcv_by_date(fromdate, todate, ticker)
+        :param fromdate: 조회 시작 일자 (YYYYMMDD)
+        :param todate  : 조회 종료 일자 (YYYYMMDD)
+        :param ticker  : 조회할 지표의 티커
+        :param market  : KOSPI / KOSDAQ
+        :param freq    : d - 일 / m - 월 / y - 년
+        :return:
+        """
+    id = indx.IndexTicker().get_id(fromdate, market, ticker)
+    df = indx.get_index_ohlcv_by_date(fromdate, todate, id, market)
     how = {'시가': 'first', '고가': 'max', '저가': 'min', '종가': 'last',
            '거래량': 'sum'}
     return resample_ohlcv(df, freq, how)
 
 
-def get_index_kospi_by_group(date):
-    return indx.get_index_kospi_by_group(date)                               
+def get_index_kospi_ohlcv_by_date(fromdate, todate, ticker, freq='d'):
+    return _get_index_ohlcv_by_date(fromdate, todate, ticker, "KOSPI", freq)
+
+
+def get_index_kosdaq_ohlcv_by_date(fromdate, todate, ticker, freq='d'):
+    return _get_index_ohlcv_by_date(fromdate, todate, ticker, "KOSDAQ", freq)
+
+
+def get_index_status_by_group(date, market):
+    return indx.get_index_status_by_group(date, market)
 
 
 # -----------------------------------------------------------------------------
@@ -116,9 +128,11 @@ def get_shorting_investor_volume_by_date(fromdate, todate, market):
     return shrt.get_shorting_investor_by_date(fromdate, todate, market, 
                                                "거래량")
 
+
 def get_shorting_investor_price_by_date(fromdate, todate, market):
-    return shrt.get_shorting_investor_by_date(fromdate, todate, market, 
-                                               "거래대금")
+    return shrt.get_shorting_investor_by_date(fromdate, todate, market,
+                                              "거래대금")
+
 
 def get_shorting_volume_top50(date, market):
     return shrt.get_shorting_volume_top50(date, market)
@@ -134,13 +148,6 @@ def get_shorting_balance_top50(date, market):
     return shrt.get_shorting_balance_top50(date, market)
 
 
-#def get_shorting_volume_by_ticker(fromdate, todate, ticker=None, market="코스피"):    
-#def get_shorting_volume_by_investor(fromdate, todate, market="코스피", inquery="거래량"):
-#def get_shorting_volume_top50(date, market="코스피"):
-#def get_shorting_balance_by_ticker(fromdate, todate, ticker, market="코스피"):
-#def get_shorting_balance_top50(date, market="코스피"):    
-    
-
 if __name__ == "__main__":    
     pd.set_option('display.expand_frame_repr', False)
     # df = get_market_ohlcv_by_date("20190225", "20190228", "000660")
@@ -149,14 +156,19 @@ if __name__ == "__main__":
     # df = get_market_fundamental_by_ticker("20180305")
     # df = get_market_fundamental_by_date("20180301", "20180320", '005930')
     # df = get_market_fundamental_by_date("20180301", "20180320", "005930", "m")
-    # tickers = get_index_kospi_ticker_list()
-    # df = get_index_kospi_ohlcv_by_date("20190101", "20190228", "코스피 200")
-    df = get_index_kospi_ohlcv_by_date("20000101", "20180630", "코스피 200", "m")
+    # tickers = get_index_ticker_list("20190225", "KOSDAQ")
+    # print(tickers)
+    # df = get_index_kosdaq_ohlcv_by_date("20190101", "20190228", "코스닥 150")
+    # df = get_index_kospi_ohlcv_by_date("20190101", "20190228", "코스피")
+    # df = get_index_kosdaq_ohlcv_by_date("20190101", "20190228", "코스닥")
+    # df = get_index_kospi_ohlcv_by_date("20000101", "20180630", "코스피 200", "m")
     # df = get_index_kospi_by_group("20190228")
-    
+    # df = get_index_portfolio_deposit_file("20000104", "코스피 소형주")
+    df = indx.IndexTicker().get_id("20000201", "KOSPI", "004")
+    # df = get_index_portfolio_deposit_file("20000201", "코스피 소형주")
     # df = get_shorting_investor_volume_by_date("20190401", "20190405", "KOSPI")
     # df = get_shorting_investor_price_by_date("20190401", "20190405", "KOSPI")
     # df = get_shorting_volume_top50("20190401", "KOSPI")
     # df = get_shorting_balance_by_ticker("20190401", "20190405", "005930")
     # df = get_shorting_balance_top50("20190401", "KOSDAQ")
-    print(df.head())
+    print(df)

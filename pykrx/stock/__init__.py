@@ -1,1 +1,1 @@
-from pykrx.stock.api import *
+from .api import *
