@@ -9,7 +9,7 @@ import pandas as pd
 # 주식 API
 # -----------------------------------------------------------------------------
 
-def get_stock_ticker_list(date=None):
+def get_market_ticker_list(date=None):
     return mrkt.get_stock_ticker_list(date)
 
 
@@ -66,9 +66,12 @@ def get_market_fundamental_by_date(fromdate, todate, ticker, freq='d'):
     return resample_ohlcv(df, freq, how)
 
 
-def get_market_fundamental_by_ticker(date, market):    
-    return mrkt.get_market_fundamental_by_ticker(date, market)
-
+def get_market_fundamental_by_ticker(date, market="ALL"):
+    df = mrkt.get_market_fundamental_by_ticker(date, market)
+    # 추정 PBR
+    df['PBR'] = df['PER'] * df['EPS'] / df['BPS']
+    df.loc[df['BPS'] == 0, 'PBR'] = 0
+    return df
 
 # -----------------------------------------------------------------------------
 # 지수(INDEX) API
@@ -153,7 +156,7 @@ if __name__ == "__main__":
     # df = get_market_ohlcv_by_date("20190225", "20190228", "000660")
     # df = get_market_ohlcv_by_date("20150720", "20150810", "000020", "m")
     # df = get_market_price_change_by_ticker("20180301", "20180320")
-    # df = get_market_fundamental_by_ticker("20180305")
+    df = get_market_fundamental_by_ticker("20180305")
     # df = get_market_fundamental_by_date("20180301", "20180320", '005930')
     # df = get_market_fundamental_by_date("20180301", "20180320", "005930", "m")
     # tickers = get_index_ticker_list("20190225", "KOSDAQ")
@@ -164,7 +167,7 @@ if __name__ == "__main__":
     # df = get_index_kospi_ohlcv_by_date("20000101", "20180630", "코스피 200", "m")
     # df = get_index_kospi_by_group("20190228")
     # df = get_index_portfolio_deposit_file("20000104", "코스피 소형주")
-    df = indx.IndexTicker().get_id("20000201", "KOSPI", "004")
+    # df = indx.IndexTicker().get_id("20000201", "KOSPI", "004")
     # df = get_index_portfolio_deposit_file("20000201", "코스피 소형주")
     # df = get_shorting_investor_volume_by_date("20190401", "20190405", "KOSPI")
     # df = get_shorting_investor_price_by_date("20190401", "20190405", "KOSPI")

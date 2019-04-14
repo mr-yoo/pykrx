@@ -125,7 +125,8 @@ def get_market_fundamental_by_date(fromdate, todate, isin, market="ALL"):
 if __name__ == "__main__":
     import pandas as pd
     pd.set_option('display.expand_frame_repr', False)
+    df = get_market_fundamental_by_ticker("20190401", "ALL")
     # df = get_market_ohlcv_by_date("20150720", "20150810", "KR7005930003")
-    df = get_market_fundamental_by_date("20150720", "20150810", "KR7005930003")
+    # df = get_market_fundamental_by_date("20150720", "20150810", "KR7005930003")
     print(df)
     
